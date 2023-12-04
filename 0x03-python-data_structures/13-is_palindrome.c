@@ -1,53 +1,56 @@
-#include "lists.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "lists.h"
 /**
-*add_nodeint - adds a new node at the beginning of a listint_t list
-*@head: head of listint_t
-*@n: int to add in listint_t list
-*Return: address of the new element, or NULL if it failed
-*/
-listint_t *add_nodeint(listint_t **head, const int n)
+ * pal - check if a list is palindrome
+ * @arr: pointer to list
+ * @index_a: primero indice (inicial)
+ * @index_b: seg indice (final)
+ * Return: return 1 if list is palindrome or 0 otherwise
+ */
+int pal(int *arr, int index_a, int index_b)
 {
-	listint_t *new;
-
-	new = malloc(sizeof(listint_t));
-	if (new == NULL)
-		return (NULL);
-	new->n = n;
-	new->next = *head;
-	*head = new;
-	return (new);
+	if (index_a > index_b)
+		return (1);
+	if (arr[index_a] != arr[index_b])
+	{
+		return (0);
+	}
+	return (pal(arr, index_a + 1, index_b - 1));
 }
 /**
-*is_palindrome - identify if a syngle linked list is palindrome
-*@head: head of listint_t
-*Return: 1 if it is palindrome else 0
-*/
+ * is_palindrome - check if a single linked list is palindrome
+ * @head: pointer to node listint_t
+ * Return: return 1 if list is palindrome or 0 otherwise
+ */
 int is_palindrome(listint_t **head)
 {
-	listint_t *head2 = *head;
-	listint_t *aux = NULL, *aux2 = NULL;
+	int len = 0;
+	int i = 0; /*, j = 0, node_a = 0, node_b = 0, index_a = 0, index_b = 0;*/
+	const listint_t *temp = *head;
+	int *arr;
 
-	if (*head == NULL || head2->next == NULL)
+	if (!*head)
 		return (1);
-	while (head2 != NULL)
+	while (temp)
 	{
-		add_nodeint(&aux, head2->n);
-		head2 = head2->next;
+		temp = temp->next;
+		len++;
 	}
-	aux2 = aux;
-	while (*head != NULL)
+	temp = *head;
+	arr = malloc(sizeof(int) * len);
+	if (!arr)
+		return (0);
+	for (i = 0; i <= (len - 1); i++)
 	{
-		if ((*head)->n != aux2->n)
-		{
-			free_listint(aux);
-			return (0);
-		}
-		*head = (*head)->next;
-		aux2 = aux2->next;
+		arr[i] = temp->n;
+		temp = temp->next;
 	}
-	free_listint(aux);
-	return (1);
+	if (pal(arr, 0, len - 1) == 1)
+	{
+		free(arr);
+		return (1);
+	}
+	free(arr);
+	return (0);
 }
