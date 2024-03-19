@@ -1,21 +1,17 @@
 #!/usr/bin/python3
-"""
-Lists all values in the states tables of a database where name
-matches the argument
-"""
-import sys
+"""  display all table in a state where name matched the arg """
 import MySQLdb
+import sys
 
-if __name__ == '__main__':
-    db = MySQLdb.connect(user=sys.argv[1], passwd=sys.argv[2],
-                         db=sys.argv[3], port=3306)
 
-    cur = db.cursor()
-    cur.execute("SELECT * \
-    FROM states \
-    WHERE CONVERT(`name` USING Latin1) \
-    COLLATE Latin1_General_CS = '{}';".format(sys.argv[4]))
-    states = cur.fetchall()
-
-    for state in states:
-        print(state))
+if __name__ == "__main__":
+    db = MySQLdb.connect(host="localhost", user=sys.argv[1],
+                         passwd=sys.argv[2], db=sys.argv[3], port=3306)
+    c = db.cursor()
+    c.execute("SELECT * FROM states WHERE name LIKE BINARY '{}'"
+                .format(sys.argv[4]))
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
+    c.close()
+    db.close()
