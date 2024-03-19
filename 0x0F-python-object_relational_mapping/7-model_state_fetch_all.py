@@ -1,37 +1,28 @@
 #!/usr/bin/python3
 
+""" Write a script that lists all State objects """
+
 if __name__ == "__main__":
 
-    import sys
     from sqlalchemy import create_engine
+    from sqlalchemy.ext.declarative import declarative_base
     from sqlalchemy.orm import sessionmaker
+    import sys
     from model_state import Base, State
 
-    if len(sys.argv) != 4:
-        print("Usage: {} <username> <password> <database>".format(sys.argv[0]))
-        sys.exit(1)
+    inp = sys.argv
+    if len(inp) < 4:
+        exit(1)
+    conn_str = 'mysql+mysqldb://{}:{}@localhost:3306/{}'
+    engine = create_engine(conn_str.format(inp[1], inp[2], inp[3]))
+    Session = sessionmaker(bind=engine)
 
-    username = sys.argv[1]
-    password = sys.argv[2]
-    database = sys.argv[3]
+    Base.metadata.create_all(engine)
 
-    conn_str = 'mysql+mysqldb://{}:{}@localhost:3306/{}'.format(username, password, database)
+    session = Session()
 
-    try:
-        engine = create_engine(conn_str)
-        Session = sessionmaker(bind=engine)
-        session = Session()
+    output = session.query(State).order_by(State.id).all()
+    for state in output:
+        print("{}: {}".format(state.id, state.name))
 
-        Base.metadata.create_all(engine)
-
-        states = session.query(State).order_by(State.id).all()
-        for state in states:
-            print("{}: {}".format(state.id, state.name))
-
-    except Exception as e:
-        print("Error:", e)
-        sys.exit(1)
-
-    finally:
-        if session:
-            session.close()
+    session.close()
