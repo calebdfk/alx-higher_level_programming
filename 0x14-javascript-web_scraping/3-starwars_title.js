@@ -2,8 +2,7 @@
 
 const request = require('request');
 
-const id = process.argv[2];
-const url = `https://swapi-api.alx-tools.com/api/films/${id}`;
+const url = process.argv[2];
 
 request.get(url, (error, response, body) => {
   if (error) {
@@ -11,7 +10,9 @@ request.get(url, (error, response, body) => {
   } else if (response.statusCode !== 200) {
     console.error(`Error: ${response.statusCode} - ${response.statusMessage}`);
   } else {
-    const film = JSON.parse(body);
-    console.log(film.title);
+    const films = JSON.parse(body).results;
+    const characterId = '18';
+    const count = films.filter(film => film.characters.includes(`https://swapi-api.alx-tools.com/api/people/${characterId}/`)).length;
+    console.log(count);
   }
 });
