@@ -1,23 +1,18 @@
 #!/usr/bin/node
 
 const request = require('request');
-const fs = require('fs');
 
-const args = process.argv;
-const url = args[2];
-const filePath = args[3];
+const url = process.argv[2];
 
-request(
-  {
-    method: 'GET',
-    uri: url
-  },
-  function (error, response, body) {
-    if (error) throw error;
-    if (response.statusCode === 200) {
-      fs.writeFile(filePath, body, 'utf8', function (error) {
-        if (error) throw error;
-      });
-    }
+request.get(url, (error, response, body) => {
+  if (error) {
+    console.error(error);
+  } else if (response.statusCode !== 200) {
+    console.error(`Error: ${response.statusCode} - ${response.statusMessage}`);
+  } else {
+    const films = JSON.parse(body).results;
+    const characterId = '18';
+    const count = films.filter(film => film.characters.includes(`https://swapi-api.alx-tools.com/api/people/${characterId}/`)).length;
+    console.log(count);
   }
-);
+});
